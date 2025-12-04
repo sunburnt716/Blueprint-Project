@@ -1,6 +1,5 @@
-// EventMarker.jsx
 import { useEffect } from "react";
-import { searchInstagramAccount } from "../api/instagramAPI.js"; // the mock data API
+import { searchInstagramAccount } from "../instagramAPI.js"; // the mock data API
 
 export default function EventMarker({ map, trackedClubs }) {
   useEffect(() => {

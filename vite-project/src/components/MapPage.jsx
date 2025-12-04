@@ -1,8 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useJsApiLoader } from "@react-google-maps/api";
-import EventMarker from "./EventMarker"; // Correct import
-import ClubSearch from "./ClubSearch";
+import { onAuthStateChanged } from "firebase/auth";
+
+import { auth, addTrackedAccount, getUserTrackedAccounts } from "../firebase.js";
+
+import EventMarker from "./EventMarker";
+import AccountSearch from "./AccountSearch";
 import LoginModal from "./LoginModal";
+
+import '../App.css';
 
 // Google Maps libraries
 const LIBRARIES = ["marker"];
@@ -18,24 +24,47 @@ const center = {
 };
 
 export default function MapPage() {
+  const [showLogin, setShowLogin] = useState(false);
+  const [user, setUser] = useState(null);
+  const [localAccounts, setLocalAccounts] = useState(() => {
+    const saved = localStorage.getItem("localAccounts");
+    return saved ? JSON.parse(saved) : [];
+  });
   const mapRef = useRef(null);
   const [mapInstance, setMapInstance] = useState(null);
-  const [user, setUser] = useState(null);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [trackedClubs, setTrackedClubs] = useState([]); // usernames of followed clubs
 
+  // Auth and Firestore stuff
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (currentUser) => {
+      console.log("Auth state changed:", currentUser);
+      setUser(currentUser);
+      if (!currentUser) return;
+
+      // Load cloud accounts once
+      const cloud = await getUserTrackedAccounts(currentUser.uid);
+
+      // Merge local and cloud accounts
+      const merged = Array.from(new Set([...localAccounts, ...cloud]));
+      setLocalAccounts(merged);
+
+      // Write merged accounts back to cloud
+      for (const acct of merged) {
+        await addTrackedAccount(currentUser.uid, acct);
+      }
+    });
+    return () => unsub();
+  }, [setUser]);
+
+  // Local storage stuff
+  useEffect(() => {
+    localStorage.setItem("localAccounts", JSON.stringify(localAccounts));
+  }, [localAccounts]);
+
+  // Map stuff
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries: LIBRARIES,
   });
-
-  // TEMP: For adding clubs locally for testing
-  const addClubForTest = (username) => {
-    if (!trackedClubs.includes(username)) {
-      setTrackedClubs((prev) => [...prev, username]);
-      console.log(`[TEST MODE] Added club: ${username}`);
-    }
-  };
 
   useEffect(() => {
     if (!isLoaded || !mapRef.current) return;
@@ -50,21 +79,33 @@ export default function MapPage() {
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
-      <div className="search-overlay">
-        <ClubSearch user={user} onAddClub={addClubForTest} />
-      </div>
+      <button className="open-login-btn" onClick={() => setShowLogin(true)}>
+        {user ? "Account" : "Log In"}
+      </button>
+
+      <LoginModal
+        user={user}
+        isOpen={showLogin}
+        onClose={() => setShowLogin(false)} />
+
+      <AccountSearch
+        user={user}
+        onAddAccount={(account) => {
+          setLocalAccounts((prev) => {
+            const updated = prev.includes(account) ? prev : [...prev, account];
+            console.log(`Added @${account} to local accounts.`);
+            return updated;
+          });
+          // Cloud sync is handled in AccountSearch
+        }}/>
 
       <div ref={mapRef} style={containerStyle}></div>
 
       {/* Event markers */}
       {mapInstance && (
-        <EventMarker map={mapInstance} trackedClubs={trackedClubs} />
+        <EventMarker map={mapInstance} trackedAccounts={localAccounts} />
       )}
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        setUser={setUser}
-      />
+      
       <div
         className="test-list-overlay"
         style={{
@@ -80,8 +121,8 @@ export default function MapPage() {
       >
         <strong>[TEST] Tracked:</strong>
         <ul>
-          {trackedClubs.map((club) => (
-            <li key={club}>{club}</li>
+          {localAccounts.map((account) => (
+            <li key={account}>{account}</li>
           ))}
         </ul>
       </div>

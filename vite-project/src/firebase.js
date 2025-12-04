@@ -132,7 +132,7 @@ export const addTrackedAccount = async (userId, username) => {
 
   // No duplicates
   if (snap.exists()) {
-    console.log(`A${username} already tracked by user`);
+    console.log(`@${username} already tracked by user`);
     return false;
   }
 
@@ -140,6 +140,7 @@ export const addTrackedAccount = async (userId, username) => {
     username,
     addedAt: Date.now()
   });
+  console.log(`@${username} added to Firestore`);
   return true;
 };
 

@@ -1,8 +1,4 @@
-<<<<<<< HEAD:vite-project/src/instagramAPI.js
 import { updateInstagramCache } from "./firebase.js";
-=======
-// src/api/instagramAPI.js
->>>>>>> a5af12717d3bdf817aef241fab8124bc3749fc92:vite-project/src/api/instagramAPI.js
 
 /**
  * Simulates fetching account data to check if it exists and is a business/creator account.

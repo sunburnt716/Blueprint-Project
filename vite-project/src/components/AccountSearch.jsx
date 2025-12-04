@@ -3,7 +3,6 @@ import { searchInstagramAccount } from "../instagramAPI.js";
 import { addTrackedAccount, updateInstagramCache } from "../firebase.js"
 
 export default function AccountSearch({ user, onAddAccount }) { 
-  console.log("Props received in AccountSearch:", { user, onAddAccount });
   const [input, setInput] = useState("");
   const [searchResult, setSearchResult] = useState(null);
   const [error, setError] = useState(null);
