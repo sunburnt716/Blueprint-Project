@@ -14,17 +14,29 @@ export async function searchInstagramAccount(username) {
 
   // 💡 Mock Data: Only these accounts exist
   const mockData = {
-    test_account_a: {
-      username: "test_account_a",
-      name: "Test Club A",
+    test_a: {
+      username: "test_a",
+      name: "Test Account A",
       isBusiness: true,
-      location: { lat: 40.7128, lng: -74.006 },
+      location: { lat: 40.502816475580396, lng: -74.45207104430426 },
+    },
+    test_b: {
+      username: "test_b",
+      name: "Test Account B",
+      isBusiness: true,
+      location: { lat: 40.52340518764876, lng: -74.45830437357046 },
+    },
+    test_c: {
+      username: "test_c",
+      name: "Test Account C",
+      isBusiness: true,
+      location: { lat: 40.52361408326971, lng: -74.43720414347104 },
     },
     rutgersblueprint: {
       username: "rutgersblueprint",
       name: "Rutgers Blueprint",
       isBusiness: true,
-      location: { lat: 40.758, lng: -73.9855 },
+      location: { lat: 40.50502571797236, lng: -74.4524553673336 },
     },
   };
 
