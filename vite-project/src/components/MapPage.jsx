@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
-import ClubSearch from "./ClubSearch";
+import ClubSearch from "./AccountSearch";
 import LoginModal from "./LoginModal";
 
 // Static libraries array to avoid the warning

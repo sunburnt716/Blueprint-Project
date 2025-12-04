@@ -121,18 +121,26 @@ export const getInstagramCache = async (username) => {
 // -------------------------------------------------
 
 /**
- * Add an account to a user's tracked accounts.
+ * Add an account to a user's tracked accounts; no duplicates.
  * @param {*} userId User adding the tracked account.
  * @param {*} username Account being added.
+ * @returns true if an account was added, false otherwise
  */
 export const addTrackedAccount = async (userId, username) => {
-  await setDoc(
-    doc(db, "users", userId, "trackedAccounts", username),
-    {
-      username,
-      addedAt: Date.now()
-    }
-  );
+  const ref = doc(db, "users", userId, "trackedAccounts", username);
+  const snap = await getDoc(ref);
+
+  // No duplicates
+  if (snap.exists()) {
+    console.log(`A${username} already tracked by user`);
+    return false;
+  }
+
+  await setDoc(ref, {
+    username,
+    addedAt: Date.now()
+  });
+  return true;
 };
 
 /**

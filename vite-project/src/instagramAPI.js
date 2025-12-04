@@ -1,4 +1,4 @@
-import { updateInstagramCache } from "../firebase.js";
+import { updateInstagramCache } from "./firebase.js";
 
 /**
  * Simulates fetching account data to check if it exists and is a business/creator account.
