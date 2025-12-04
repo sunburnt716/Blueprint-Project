@@ -1,28 +1,28 @@
 import { useEffect } from "react";
 import { searchInstagramAccount } from "../instagramAPI.js"; // the mock data API
 
-export default function EventMarker({ map, trackedClubs }) {
+export default function EventMarker({ map, trackedAccounts }) {
   useEffect(() => {
-    if (!map || !trackedClubs || trackedClubs.length === 0) return;
+    if (!map || !trackedAccounts || trackedAccounts.length === 0) return;
 
     const markers = [];
 
     const addMarkers = async () => {
-      for (const username of trackedClubs) {
-        // Fetch the club info from the mock API
-        const clubData = await searchInstagramAccount(username);
-        if (!clubData || !clubData.location) continue;
+      for (const username of trackedAccounts) {
+        // Fetch the account info from the mock API
+        const accountData = await searchInstagramAccount(username);
+        if (!accountData || !accountData.location) continue;
 
         const marker = new window.google.maps.Marker({
-          position: clubData.location,
+          position: accountData.location,
           map,
-          title: clubData.name || username,
+          title: accountData.name || username,
         });
 
         const infoWindow = new window.google.maps.InfoWindow({
           content: `<div>
-                      <h3>${clubData.name || username}</h3>
-                      <p>@${clubData.username}</p>
+                      <h3>${accountData.name || username}</h3>
+                      <p>@${accountData.username}</p>
                     </div>`,
         });
 
@@ -33,9 +33,9 @@ export default function EventMarker({ map, trackedClubs }) {
 
     addMarkers();
 
-    // Cleanup markers on unmount or when trackedClubs changes
+    // Cleanup markers on unmount or when trackedAccounts changes
     return () => markers.forEach((m) => m.setMap(null));
-  }, [map, trackedClubs]);
+  }, [map, trackedAccounts]);
 
   return null;
 }
