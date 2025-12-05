@@ -19,8 +19,8 @@ const containerStyle = {
 };
 
 const center = {
-  lat: 40.7128,
-  lng: -74.006,
+  lat: 40.5184740017725,
+  lng: -74.45309900288558,
 };
 
 export default function MapPage() {
@@ -128,6 +128,7 @@ export default function MapPage() {
           left: "10px",
           zIndex: 1000,
           backgroundColor: "rgba(255, 255, 255, 0.9)",
+          color: "black",
           padding: "10px",
           borderRadius: "5px",
           boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
